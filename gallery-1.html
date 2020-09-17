@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Screen Controls</title>
+	<meta name="description" content="A-Frame Examples">
+	<script src="js/aframe-master.1.0.4.min.js"></script>
+	<script src="js/aframe-environment-component.min.js"></script>
+	<script src="js/extended-wasd-controls.js"></script>
+	<script src="js/joystick.js"></script>
+<style>
+
+body
+{
+	/* disable long press in iOS? */
+	-webkit-touch-callout: none;
+}
+
+.mainUI
+{
+	border: 0px solid pink; 
+	position: fixed; 
+	top: 0px;  
+	width:99%; 
+	height:99%; 
+	z-index: 1; 
+	pointer-events: none; /* allow click-through in transparent areas */
+}
+
+.regionUI
+{
+	border: 0px solid yellow;
+	position: absolute; 
+	display: flex;
+	flex-direction: row;
+	pointer-events: none;
+}
+
+.buttonUI
+{
+	border: 0px solid lime;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	pointer-events: auto;	
+	filter: drop-shadow(0px 0px 20px white);
+}
+
+.skyColor
+{
+	filter: hue-rotate(240deg) saturate(100%) brightness(100%) drop-shadow(0px 0px 20px white);
+}
+
+.baseColor
+{
+	filter: hue-rotate(24deg) saturate(68%) brightness(100%) drop-shadow(0px 0px 20px white);
+}
+
+.grayColor
+{
+	filter: hue-rotate(0deg) saturate(0%) brightness(100%) drop-shadow(0px 0px 20px white);
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- note: by using red base images for buttons, can tint (HSV) using filter: hue-rotate(); etc. -->
+
+<div class="mainUI" id="uiDiv" oncontextmenu="return false;">
+
+	<!-- top-left -->
+	<div class="regionUI skyColor" style="top: 10px; left: 10px;" oncontextmenu="return false;">
+	</div>
+
+	<!-- top-right -->
+	<div class="regionUI" style="top: 10px; right: 10px;">
+	</div>
+
+	<!-- bottom-left -->
+	<div class="regionUI" style="bottom: 10px; left: 10px;">
+		<div class="buttonUI" style="width: 128px; opacity:0.80;">
+			<img src="images/joystick-base.png"/>
+			<div id="stick1" style="position: absolute; left:32px; top:32px;">
+			<img src="images/joystick-red.png"/>		
+			</div>
+		</div>
+	</div>
+
+	<!-- bottom-right -->
+	<div class="regionUI baseColor" style="bottom: 10px; right: 10px;">
+	</div>
+
+</div>
+<script>
+AFRAME.registerComponent("boundary",
+{
+	init: function()
+	{
+
+	},
+
+	tick: function(time, deltaTime)
+	{
+		if (this.el.object3D.position.z < -2.5)
+			this.el.object3D.position.z = -2.5;
+		if (this.el.object3D.position.z >  2.5)
+			this.el.object3D.position.z =  2.5;
+		if (this.el.object3D.position.x < -2.5)
+			this.el.object3D.position.x = -2.5;
+		if (this.el.object3D.position.x >  2.5)
+			this.el.object3D.position.x =  2.5;
+
+	}
+});
+       
+</script>
+<script>
+
+	// need to run javascript code after a-scene entities and components are loaded
+	AFRAME.registerComponent('screen-controls', 
+	{
+		init: function () 
+		{
+    		this.component = document.getElementById("camera").components["extended-wasd-controls"];
+    		this.joystick1 = new Joystick("stick1", 64, 8);
+    		console.log("controls initialized");
+  		},
+
+  		tick: function(time, deltaTime)
+  		{
+  			// console.log( joystick1.value )
+  			// console.log( this.component.movePercent )
+  			this.component.movePercent.x =  this.joystick1.value.x;
+  			this.component.movePercent.z = -this.joystick1.value.y;
+  			
+  		}
+	});
+
+
+</script>
+ 
+<!-- 
+	disable press "F" to enter fullscreen mode
+	disable WASD controls attached to default camera
+
+	optional:
+	 
+ -->
+<a-scene 
+    environment="preset: default; shadow: true; lighting: none;"
+	keyboard-shortcuts="enterVR: false;" 
+	vr-mode-ui="enabled: false;"
+	light="defaultLightsEnabled: false;"
+	screen-controls>
+	
+	<!-- Dim ambient lighting.  -->
+	<a-light type="ambient" color="#222222"></a-light>
+	<a-light type="point" color="#CCCCCC" position="0 3 0"></a-light>
+	
+	
+	<a-assets timeout="10000">
+		
+
+		<img id="crate" 	src="images/crate.jpg" />
+		<img id="grid" 		src="images/color-grid.png" />
+		<img id="wood" 		src="images/wood.jpg" />
+		<img id="wall"	    src="images/brick.jpg" />
+		<img id="puppy" 	src="images/photos/puppy.jpg" />
+		<img id="campfire" 	src="images/photos/campfire.jpg" />
+		<img id="bubbles" 	src="images/photos/bubbles.jpg" />
+		<img id="lilac" 	src="images/photos/lilac.jpg" />
+		<a-asset-item id="table" src="models/table.glb"></a-asset-item>
+		<a-asset-item id="picture" src="models/picture.glb"></a-asset-item>
+		<a-asset-item id="pagoda" src="models/pagoda.glb"></a-asset-item>
+		<!-- <video id="video" loop="true" src="video/sintel.mp4"></video> -->
+	</a-assets>
+
+	<!--
+		create a camera entity
+		<a-entity id="camera" camera
+		position="0 1.6 0"
+		look-controls wasd-controls="acceleration: 4;" boundary>
+	</a-entity>
+	-->
+	<!-- adding in look controls; automatically sets turnEnabled/lookEnabled to false  -->
+	<a-entity id="camera" camera look-controls
+		position="0 1.6 0"
+		extended-wasd-controls="flyEnabled: true; inputType: joystick;"
+		boundary>
+	</a-entity>
+
+	
+
+	
+	<!-- floor -->  
+	<a-box width="6.5" depth="6.5" height="0.1" position="0 0 0" material="src:#wood;"></a-box>
+
+	<!-- walls -->
+	<a-box width="6.5" depth="0.1" height="3" position="0 1.5 -3.1" material="src:#wall; repeat: 4.2 2;"></a-box>
+
+	<a-box width="6.5" depth="0.1" height="3" position="0 1.5 3.1" material="src:#wall; repeat: 4.2 2;"></a-box>
+
+	<a-box width="6.5" depth="0.1" height="3" position="3.1 1.5 0" rotation="0 90 0" material="src:#wall; repeat: 4.2 2;"></a-box>
+
+	<a-box width="6.5" depth="0.1" height="3" position="-3.1 1.5 0" rotation="0 90 0" material="src:#wall; repeat: 4.2 2;"></a-box>
+	
+
+	<!-- artwork -->
+	
+	<a-entity position="0 1.2 -3" rotation="0 270 0" scale="1 1 1" gltf-model="#picture">
+		<a-plane position="0.02 0.68 0" rotation="0 90 0" material="shader:flat; src:#puppy; side:double;"></a-plane>
+	</a-entity>
+
+	
+	<a-entity position="3 1.2 0" rotation="0 180 0" scale="1 1 1.6" gltf-model="#picture">
+		<a-plane position="0.02 0.68 0" rotation="0 90 0" material="shader:flat; src:#campfire; side:double;"></a-plane>
+	</a-entity>
+
+	<a-entity position="-3 1.2 0" rotation="0 0 0" scale="1 1 1" gltf-model="#picture">
+		<a-plane position="0.02 0.68 0" rotation="0 90 0" material="shader:flat; src:#bubbles; side:double;"></a-plane>
+	</a-entity>
+
+	<a-entity position="0 1.2 3" rotation="0 90 0" scale="1 1 1.33" gltf-model="#picture">
+		<a-plane position="0.02 0.68 0" rotation="0 90 0" material="shader:flat; src:#lilac; side:double;"></a-plane>
+	</a-entity>
+
+	
+</a-scene>
+
+</body>
+</html>
