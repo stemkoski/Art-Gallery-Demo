@@ -174,26 +174,14 @@ AFRAME.registerComponent("boundary",
 		<img id="lilac" 	src="images/photos/lilac.jpg" />
 		<a-asset-item id="table" src="models/table.glb"></a-asset-item>
 		<a-asset-item id="picture" src="models/picture.glb"></a-asset-item>
-		<a-asset-item id="pagoda" src="models/pagoda.glb"></a-asset-item>
-		<!-- <video id="video" loop="true" src="video/sintel.mp4"></video> -->
+		
 	</a-assets>
 
-	<!--
-		create a camera entity
-		<a-entity id="camera" camera
-		position="0 1.6 0"
-		look-controls wasd-controls="acceleration: 4;" boundary>
-	</a-entity>
-	-->
-	<!-- adding in look controls; automatically sets turnEnabled/lookEnabled to false  -->
 	<a-entity id="camera" camera look-controls
 		position="0 1.6 0"
 		extended-wasd-controls="flyEnabled: true; inputType: joystick;"
 		boundary>
 	</a-entity>
-
-	
-
 	
 	<!-- floor -->  
 	<a-box width="6.5" depth="6.5" height="0.1" position="0 0 0" material="src:#wood;"></a-box>
