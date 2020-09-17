@@ -150,7 +150,8 @@ AFRAME.registerComponent("boundary",
 	environment="preset: arches; shadow: true;" 
  -->
 <a-scene 
-
+    environment="preset: default; shadow: true; playArea: 1.4; groundYScale: 20;
+    groundTexture: walkernoise; groundColor: #221100; groundColor2: #48322B;"
 	keyboard-shortcuts="enterVR: false;" 
 	vr-mode-ui="enabled: false;"
 	light="defaultLightsEnabled: false;"
@@ -160,7 +161,6 @@ AFRAME.registerComponent("boundary",
 	<a-light type="ambient" color="#222222"></a-light>
 	<a-light type="point" color="#CCCCCC" position="0 3 0"></a-light>
 	
-	<a-sky src="#sky"></a-sky>
 
 	<a-assets timeout="10000">
 		<img id="sky" 	src="images/quad.jpg" />
